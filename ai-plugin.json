@@ -1,0 +1,20 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "Polygon Stocks API",
+    "name_for_model": "PolygonStocksAPI",
+    "description_for_human": "Access various financial data and information from Polygon.io's Stocks API.",
+    "description_for_model": "Access various financial data and information from Polygon.io's Stocks API. Display results using markdown tables.",
+    "auth": {
+        "type": "apiKey",
+        "apikey_header_name": "Authorization",
+        "apikey_header_value_prefix": "Bearer ",
+        "apikey_in_query": false
+    },
+    "api": {
+        "type": "openapi",
+        "url": "[https://chatgpt-plugin-logrocket.replit.app]/openapi.yaml"
+    },
+    "logo_url": "[https://chatgpt-plugin-logrocket.replit.app]/logo.jpg",
+    "contact_email": "support@polygon.io",
+    "legal_info_url": "https://polygon.io/dashboard/agreements"
+}
