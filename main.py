@@ -47,11 +47,17 @@ def get_daily_open_close(ticker, date, adjusted=True):
         response.raise_for_status()  # Raise an exception for non-2xx responses
 
         data = response.json()
+        print("Daily Open/Close Data:")
+        print(data)
         return data
     except requests.exceptions.RequestException as e:
         print("Request Exception:", e)
+    except requests.exceptions.HTTPError as e:
+        print("HTTP Error:", e)
+        print("Response Content:", response.text)
     except ValueError as e:
         print("JSON Decode Error:", e)
+        print("Response Content:", response.text)
 
     return None  # Return None if there's an error
 
@@ -79,7 +85,17 @@ def get_trades(stock_ticker, timestamp=None, order=None, limit=10, sort=None):
     }
 
     response = requests.get(url, params=params)
-    print(response.json())
+    
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            print("Trades Data:")
+            print(data)
+        except requests.exceptions.JSONDecodeError as e:
+            print("JSON Decode Error:", e)
+            print("Response Content:", response.text)
+    else:
+        print("Request failed with status code:", response.status_code)
 
 if __name__ == "__main__":
     ticker = 'AAPL'
@@ -87,13 +103,9 @@ if __name__ == "__main__":
 
     # Get daily open/close data
     daily_open_close_data = get_daily_open_close(ticker, date)
-    print("\nDaily Open/Close Data:")
-    print(daily_open_close_data)
 
     # Get trades data
     stock_ticker = 'AAPL'
     trades_data = get_trades(stock_ticker)
-    print("\nTrades Data:")
-    print(trades_data)
 
     sys.exit()  # Exit the code when done running
