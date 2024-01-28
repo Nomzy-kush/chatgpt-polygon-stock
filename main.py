@@ -1,10 +1,11 @@
 import requests
+import sys
 
 # Replace 'YOUR_API_KEY' with your actual API key from Polygon.io
 API_KEY = 'ZGLituVvaZgEpEX91dF9GpbsDdgXxawN'
 
 # Define the base URL for Polygon.io API
-BASE_URL = 'https://api.polygon.io/v2'
+BASE_URL = 'https://api.polygon.io'
 
 def get_aggregate_bars(ticker, multiplier, timespan, from_date, to_date, adjusted=True, sort='asc', limit=120):
     url = f'{BASE_URL}/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{from_date}/{to_date}'
@@ -41,9 +42,18 @@ def get_daily_open_close(ticker, date, adjusted=True):
         'apiKey': API_KEY
     }
 
-    response = requests.get(url, params=params)
-    data = response.json()
-    return data
+    try:
+        response = requests.get(url, params=params)
+        response.raise_for_status()  # Raise an exception for non-2xx responses
+
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print("Request Exception:", e)
+    except ValueError as e:
+        print("JSON Decode Error:", e)
+
+    return None  # Return None if there's an error
 
 def get_previous_close(ticker, adjusted=True):
     url = f'{BASE_URL}/aggs/ticker/{ticker}/prev'
@@ -58,7 +68,7 @@ def get_previous_close(ticker, adjusted=True):
     return data
 
 def get_trades(stock_ticker, timestamp=None, order=None, limit=10, sort=None):
-    url = f'{BASE_URL}/v3/trades/{stock_ticker}'
+    url = f'{BASE_URL}/v2/aggs/ticker/{ticker}/prev'
 
     params = {
         'apiKey': API_KEY,
@@ -69,41 +79,21 @@ def get_trades(stock_ticker, timestamp=None, order=None, limit=10, sort=None):
     }
 
     response = requests.get(url, params=params)
-    data = response.json()
-    return data
+    print(response.json())
 
 if __name__ == "__main__":
-    # Example usage of the functions
     ticker = 'AAPL'
-    multiplier = '1'
-    timespan = 'day'
-    from_date = '2023-01-09'
-    to_date = '2023-01-09'
-
-    # Get aggregate bars data
-    aggregate_data = get_aggregate_bars(ticker, multiplier, timespan, from_date, to_date)
-    print("Aggregate Bars Data:")
-    print(aggregate_data)
-
-    # Get grouped daily data
-    locale = 'us'
     date = '2023-01-09'
-    grouped_daily_data = get_grouped_daily(locale, date)
-    print("\nGrouped Daily Data:")
-    print(grouped_daily_data)
 
     # Get daily open/close data
     daily_open_close_data = get_daily_open_close(ticker, date)
     print("\nDaily Open/Close Data:")
     print(daily_open_close_data)
 
-    # Get previous close data
-    previous_close_data = get_previous_close(ticker)
-    print("\nPrevious Close Data:")
-    print(previous_close_data)
-
     # Get trades data
     stock_ticker = 'AAPL'
     trades_data = get_trades(stock_ticker)
     print("\nTrades Data:")
     print(trades_data)
+
+    sys.exit()  # Exit the code when done running
